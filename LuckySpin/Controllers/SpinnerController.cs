@@ -40,9 +40,10 @@ namespace LuckySpin.Controllers
                 Luck = info.Luck,
                 Balance = info.StartingBalance
             };
-            _lsc.CurrentPlayer = player;
+            _lsc.Player.Add(player);
+            _lsc.SaveChanges();
 
-            
+
             return RedirectToAction("Spin", new {id = player.PlayerId});
         }
 
@@ -76,9 +77,8 @@ namespace LuckySpin.Controllers
                 IsWinning = spinVM.Winner
             };
 
-            //TODO: Use _lsc to add the spin to dbContext _lsc and save changes to the database, instead of the repository
-            Spin spin = _lsc.Find<Spin>(id);
-            _lsc.Spins.AddSpin(spin);
+            _lsc.Add(spin);
+            _lsc.SaveChanges();
 
             return View("Spin", spinVM); //Sends the updated spin info to the Spin View
         }
@@ -89,8 +89,7 @@ namespace LuckySpin.Controllers
          [HttpGet]
          public IActionResult LuckList()
         {
-            //TODO: Pass the DbSet of Spins from the _lsc to the LuckyList View, instead of the repository spins
-            return View(_repository.PlayerSpins);
+            return View(_lsc.Spins);
         }
 
     }
